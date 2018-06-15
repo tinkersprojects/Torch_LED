@@ -20,7 +20,7 @@ void loop()
 
 void function1()
 {
-    LEDs.high(1);
+    LEDs.value(1, 100);
 }
 
 void function2()
@@ -30,7 +30,7 @@ void function2()
 
 void function3()
 {
-    LEDs.value(1, 100);
+    LEDs.high(1);
 }
 
 void function4()
