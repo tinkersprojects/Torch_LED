@@ -1,5 +1,5 @@
 /**********************************************************************************************
- * Arduino LED Func Library - Version 1.0
+ * Arduino Torch LED V1 Library - Version 1.1
  * by William Bailes <williambailes@gmail.com> http://tinkersprojects.com/
  *
  * This Library is licensed under a GPLv3 License
@@ -11,12 +11,13 @@
   #include "WProgram.h"
 #endif
 
-#include "Torch_LED.h"
+#include "Torch_LED_V1.h"
 
 /******************* SETUP *******************/
 
-Torch_LED::Torch_LED(byte FuncNum,byte button,byte FirstLED,byte SecondLED,byte ThirdLED)
+Torch_LED_V1::Torch_LED_V1(int FuncNum,int button,int FirstLED,int SecondLED,int ThirdLED)
 {
+    
     NumberOfFunctions = FuncNum;
     NumberOfLEDs = 3;
     ButtonPin = button;
@@ -29,7 +30,7 @@ Torch_LED::Torch_LED(byte FuncNum,byte button,byte FirstLED,byte SecondLED,byte 
     pinMode(ButtonPin, INPUT);
 }
 
-Torch_LED::Torch_LED(byte FuncNum,byte button,byte FirstLED,byte SecondLED)
+Torch_LED_V1::Torch_LED_V1(int FuncNum,int button,int FirstLED,int SecondLED)
 {
     NumberOfFunctions = FuncNum;
     NumberOfLEDs = 2;
@@ -41,7 +42,7 @@ Torch_LED::Torch_LED(byte FuncNum,byte button,byte FirstLED,byte SecondLED)
     pinMode(ButtonPin, INPUT);
 }
 
-Torch_LED::Torch_LED(byte FuncNum,byte button,byte FirstLED)
+Torch_LED_V1::Torch_LED_V1(int FuncNum,int button,int FirstLED)
 {
     NumberOfFunctions = FuncNum;
     NumberOfLEDs = 1;
@@ -55,25 +56,26 @@ Torch_LED::Torch_LED(byte FuncNum,byte button,byte FirstLED)
 
 /******************* SET *******************/
 
-void Torch_LED::NextFunction()
+void Torch_LED_V1::NextFunction()
 {
     FunctionCount++;
-    if(FunctionCount >= 5 || FunctionCount >= NumberOfFunctions)
+    if(FunctionCount >= 6 || FunctionCount >= NumberOfFunctions+1)
     FunctionCount = 0;
-    Torch_LED::off();
-    Torch_LED::run();
+    
+    this->off();
+    this->run();
 }
 
-void Torch_LED::GotoFunction(byte FunctionNumber)
+void Torch_LED_V1::GotoFunction(int FunctionNumber)
 {
     FunctionCount = FunctionNumber;
-    if(FunctionCount >= 5 || FunctionCount >= NumberOfFunctions)
+    if(FunctionCount >= 6 || FunctionCount >= NumberOfFunctions+1)
     FunctionCount = 0;
-    Torch_LED::off();
-    Torch_LED::run();
+    this->off();
+    this->run();
 }
 
-void Torch_LED::SetFunction(byte FuctionNumber, void (*FCB) ())
+void Torch_LED_V1::SetFunction(int FuctionNumber, void (*FCB) ())
 {
     switch(FuctionNumber){
         case 1:
@@ -97,7 +99,7 @@ void Torch_LED::SetFunction(byte FuctionNumber, void (*FCB) ())
 
 /******************* COMMANDS *******************/
 
-void Torch_LED::run()
+void Torch_LED_V1::run()
 {
     bool currentbuttonState = digitalRead(ButtonPin);
     if(currentbuttonState != buttonState && currentbuttonState == HIGH) 
@@ -107,7 +109,7 @@ void Torch_LED::run()
     }
     else if(currentbuttonState != buttonState && currentbuttonState == LOW) 
     {
-        Torch_LED::NextFunction();
+        this->NextFunction();
         buttonState = currentbuttonState; 
     }
     else if(buttonState == HIGH && lastButtonPressTime+3000 < millis()) 
@@ -115,51 +117,52 @@ void Torch_LED::run()
         FunctionCount = 0;
     }
 
-    switch(FunctionCount){
+    switch(FunctionCount)
+    {
         case 1:
             if(FCB1 != NULL)
                 FCB1();
             else
-                Torch_LED::FCB1();
+                this->F1();
             break;
         case 2:
             if(FCB2 != NULL)
                 FCB2();
             else
-                Torch_LED::FCB2();
+                this->F2();
             break;
         case 3:
             if(FCB3 != NULL)
                 FCB3();
             else
-                Torch_LED::FCB3();
+                this->F3();
             break;
         case 4:
             if(FCB4 != NULL)
                 FCB4();
             else
-                Torch_LED::strobe();
+                this->strobe();
             break;
         case 5:
             if(FCB5 != NULL)
                 FCB5();
             else
-                Torch_LED::SOS();
+                this->SOS();
             break;
         default:
-            Torch_LED::off();
+            this->off();
             break;
     }
 }
 
-void Torch_LED::off()
+void Torch_LED_V1::off()
 {
-    Torch_LED::low(1);
-    Torch_LED::low(2);
-    Torch_LED::low(3);
+    digitalWrite(LED1Pin,LOW);
+    digitalWrite(LED2Pin,LOW);
+    digitalWrite(LED3Pin,LOW);
 }
 
-void Torch_LED::high(byte LED)
+void Torch_LED_V1::high(int LED)
 {
     if(LED == 1)
     {
@@ -175,7 +178,7 @@ void Torch_LED::high(byte LED)
     }
 }
 
-void Torch_LED::low(byte LED)
+void Torch_LED_V1::low(int LED)
 {
     if(LED == 1)
     {
@@ -191,7 +194,7 @@ void Torch_LED::low(byte LED)
     }
 }
 
-void Torch_LED::value(byte LED, byte LEDvalue)
+void Torch_LED_V1::value(int LED, int LEDvalue)
 {
     if(LED == 1)
     {
@@ -210,67 +213,67 @@ void Torch_LED::value(byte LED, byte LEDvalue)
 
 /******************* FUNCTIONS *******************/
 
-void Torch_LED::F1()
+void Torch_LED_V1::F1()
 {
-    Torch_LED::high(1);
+    this->high(1);
 }
 
-void Torch_LED::F2()
+void Torch_LED_V1::F2()
 {
     switch(NumberOfLEDs){
         case 1:
-            Torch_LED::value(1,180);
+            this->value(1,180);
             break;
         case 2:
-            Torch_LED::value(1,180);
+            this->value(1,180);
             break;
         case 3:
-            Torch_LED::high(2);
+            this->high(2);
             break;
     }
 }
 
-void Torch_LED::F3()
+void Torch_LED_V1::F3()
 {
     switch(NumberOfLEDs)
     {
         case 1:
-            Torch_LED::value(1,120);
+            this->value(1,120);
             break;
         case 2:
-            Torch_LED::high(2);
+            this->high(2);
             break;
         case 3:
-            Torch_LED::high(3);
+            this->high(3);
             break;
     }
 }
 
-void Torch_LED::strobe()
+void Torch_LED_V1::strobe()
 {
     if(millis()/100%2)
-        Torch_LED::high(1);
+        this->high(1);
     else
-        Torch_LED::low(1);
+        this->low(1);
 }
 
-void Torch_LED::party()
+void Torch_LED_V1::party()
 {
-    Torch_LED::strobe();
+    this->strobe();
     if(NumberOfLEDs > 1)
     {
         if(millis()/100%2)
-            Torch_LED::low(2);
+            this->low(2);
         else
-            Torch_LED::high(2);
+            this->high(2);
     }
 }
 
-void Torch_LED::SOS()
+void Torch_LED_V1::SOS()
 {
-    byte timing = millis()/200%22;
+    int timing = millis()/200%22;
     if(timing == 0 || timing == 2 || timing == 4  || (timing >= 8 && timing <= 10)  || (timing >= 12 && timing <= 14)  || (timing >= 16 && timing <= 18))
-        Torch_LED::high(1);
+        this->high(1);
     else
-        Torch_LED::low(1);
+        this->low(1);
 }
