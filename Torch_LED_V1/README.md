@@ -1,4 +1,4 @@
-# Torch_LED_V1 (working progress)
+# Torch_LED_V1
 [https://tinkersprojects.com/](https://tinkersprojects.com/)
 
 Torch_LED_V1 is the first library for the control of light functions within torches. There can be any number of functions of functions that can be used to control the torch LEDs. There are 7 built in functions within the library that can be used and 6 are set at default functions. There is also an ability to make your own functions, this will help you get the best settings for your torch. 
