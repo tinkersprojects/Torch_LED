@@ -102,19 +102,22 @@ void Torch_LED_V1::SetFunction(int FuctionNumber, void (*FCB) ())
 void Torch_LED_V1::run()
 {
     bool currentbuttonState = digitalRead(ButtonPin);
+    
     if(currentbuttonState != buttonState && currentbuttonState == HIGH) 
     {
         lastButtonPressTime = millis();
         buttonState = currentbuttonState; 
     }
-    else if(currentbuttonState != buttonState && currentbuttonState == LOW) 
+    else if(currentbuttonState != buttonState) 
     {
-        this->NextFunction();
         buttonState = currentbuttonState; 
+        if(lastButtonPressTime+3000 > millis())
+        this->NextFunction();
     }
     else if(buttonState == HIGH && lastButtonPressTime+3000 < millis()) 
     {
         FunctionCount = 0;
+        buttonState = currentbuttonState; 
     }
 
     switch(FunctionCount)
